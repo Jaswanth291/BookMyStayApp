@@ -2,12 +2,13 @@ import java.util.Scanner;
 
 public class BookMyStayApp {
 
-    // Centralized Room Data
+    // Room Data
     static String[] roomTypes = {"Single Room", "Double Room", "Deluxe Room", "Suite Room"};
     static int[] availability = {5, 3, 2, 1};
-
-    // Room number tracking
     static int[] roomNumbers = {101, 201, 301, 401};
+
+    // Add-on services
+    static String[] services = {"Breakfast", "WiFi", "Parking"};
 
     public static void main(String[] args) {
 
@@ -25,7 +26,11 @@ public class BookMyStayApp {
         System.out.print("Enter room type to book: ");
         String room = sc.nextLine();
 
-        bookRoom(name, room);
+        int roomIndex = bookRoom(name, room);
+
+        if (roomIndex != -1) {
+            selectServices(sc, name, roomIndex);
+        }
 
         System.out.println("\nUpdated Availability:");
         displayRooms();
@@ -41,13 +46,10 @@ public class BookMyStayApp {
         }
     }
 
-    // Booking + Allocation
-    public static void bookRoom(String name, String room) {
-        boolean found = false;
-
+    // Booking logic
+    public static int bookRoom(String name, String room) {
         for (int i = 0; i < roomTypes.length; i++) {
             if (roomTypes[i].equalsIgnoreCase(room)) {
-                found = true;
 
                 if (availability[i] > 0) {
 
@@ -59,15 +61,38 @@ public class BookMyStayApp {
                     System.out.println("Room Type: " + roomTypes[i]);
                     System.out.println("Room Number: " + allocatedRoom);
 
+                    return i; // return index for services
                 } else {
                     System.out.println("❌ Room not available");
+                    return -1;
                 }
-                break;
             }
         }
 
-        if (!found) {
-            System.out.println("⚠️ Invalid room type");
+        System.out.println("⚠️ Invalid room type");
+        return -1;
+    }
+
+    // Add-on services selection
+    public static void selectServices(Scanner sc, String name, int roomIndex) {
+
+        System.out.println("\nSelect Add-On Services (y/n):");
+
+        String selected = "";
+
+        for (int i = 0; i < services.length; i++) {
+            System.out.print(services[i] + "? (y/n): ");
+            String choice = sc.nextLine();
+
+            if (choice.equalsIgnoreCase("y")) {
+                selected += services[i] + " ";
+            }
         }
+
+        System.out.println("\n🧾 Final Reservation Details:");
+        System.out.println("Guest Name: " + name);
+        System.out.println("Room Type: " + roomTypes[roomIndex]);
+        System.out.println("Add-On Services: " +
+                (selected.isEmpty() ? "None" : selected));
     }
 }
