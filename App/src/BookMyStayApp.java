@@ -6,6 +6,9 @@ public class BookMyStayApp {
     static String[] roomTypes = {"Single Room", "Double Room", "Deluxe Room", "Suite Room"};
     static int[] availability = {5, 3, 2, 1};
 
+    // Room number tracking
+    static int[] roomNumbers = {101, 201, 301, 401};
+
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
@@ -16,10 +19,13 @@ public class BookMyStayApp {
 
         displayRooms();
 
-        System.out.print("\nEnter room type to book: ");
+        System.out.print("\nEnter your name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter room type to book: ");
         String room = sc.nextLine();
 
-        bookRoom(room);
+        bookRoom(name, room);
 
         System.out.println("\nUpdated Availability:");
         displayRooms();
@@ -35,8 +41,8 @@ public class BookMyStayApp {
         }
     }
 
-    // Booking logic (First-Come-First-Served)
-    public static void bookRoom(String room) {
+    // Booking + Allocation
+    public static void bookRoom(String name, String room) {
         boolean found = false;
 
         for (int i = 0; i < roomTypes.length; i++) {
@@ -44,8 +50,15 @@ public class BookMyStayApp {
                 found = true;
 
                 if (availability[i] > 0) {
-                    availability[i]--; // decrease count
-                    System.out.println("✅ Booking Confirmed for " + roomTypes[i]);
+
+                    int allocatedRoom = roomNumbers[i] + (5 - availability[i]);
+                    availability[i]--;
+
+                    System.out.println("\n✅ Booking Confirmed!");
+                    System.out.println("Guest Name: " + name);
+                    System.out.println("Room Type: " + roomTypes[i]);
+                    System.out.println("Room Number: " + allocatedRoom);
+
                 } else {
                     System.out.println("❌ Room not available");
                 }
