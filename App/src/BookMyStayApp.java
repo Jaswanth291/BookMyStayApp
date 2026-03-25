@@ -3,81 +3,93 @@ import java.util.Scanner;
 
 public class BookMyStayApp {
 
-    // Room Data
     static String[] roomTypes = {"Single Room", "Double Room", "Deluxe Room", "Suite Room"};
     static int[] availability = {5, 3, 2, 1};
     static int[] roomNumbers = {101, 201, 301, 401};
-
-    // Add-on services
     static String[] services = {"Breakfast", "WiFi", "Parking"};
 
-    // Booking History
     static ArrayList<String> bookingHistory = new ArrayList<>();
 
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("===================================");
-        System.out.println("   Welcome to Book My Stay App");
-        System.out.println("===================================");
+        try {
+            System.out.println("===================================");
+            System.out.println("   Welcome to Book My Stay App");
+            System.out.println("===================================");
 
-        displayRooms();
+            displayRooms();
 
-        System.out.print("\nEnter your name: ");
-        String name = sc.nextLine();
+            // Name validation
+            String name;
+            while (true) {
+                System.out.print("\nEnter your name: ");
+                name = sc.nextLine().trim();
 
-        System.out.print("Enter room type to book: ");
-        String room = sc.nextLine();
+                if (!name.isEmpty()) break;
+                System.out.println("⚠️ Name cannot be empty!");
+            }
 
-        int roomIndex = bookRoom(name, room);
+            // Room validation
+            int roomIndex = -1;
+            while (roomIndex == -1) {
+                System.out.print("Enter room type to book: ");
+                String room = sc.nextLine();
+                roomIndex = getRoomIndex(room);
 
-        if (roomIndex != -1) {
-            String selectedServices = selectServices(sc);
-            saveBooking(name, roomIndex, selectedServices);
+                if (roomIndex == -1) {
+                    System.out.println("⚠️ Invalid room type. Try again.");
+                }
+            }
+
+            if (availability[roomIndex] > 0) {
+
+                int allocatedRoom = roomNumbers[roomIndex] + (5 - availability[roomIndex]);
+                availability[roomIndex]--;
+
+                System.out.println("\n✅ Booking Confirmed!");
+                System.out.println("Guest Name: " + name);
+                System.out.println("Room Type: " + roomTypes[roomIndex]);
+                System.out.println("Room Number: " + allocatedRoom);
+
+                String selectedServices = selectServices(sc);
+
+                saveBooking(name, roomIndex, selectedServices);
+
+            } else {
+                System.out.println("❌ Room not available");
+            }
+
+            showHistory();
+
+        } catch (Exception e) {
+            System.out.println("⚠️ Unexpected error occurred: " + e.getMessage());
+        } finally {
+            sc.close();
         }
-
-        showHistory();
     }
 
     // Display rooms
     public static void displayRooms() {
         System.out.println("\nAvailable Room Types:\n");
-
         for (int i = 0; i < roomTypes.length; i++) {
             System.out.println((i + 1) + ". " + roomTypes[i] +
                     " - Available: " + availability[i]);
         }
     }
 
-    // Booking logic
-    public static int bookRoom(String name, String room) {
+    // Get room index safely
+    public static int getRoomIndex(String room) {
         for (int i = 0; i < roomTypes.length; i++) {
             if (roomTypes[i].equalsIgnoreCase(room)) {
-
-                if (availability[i] > 0) {
-
-                    int allocatedRoom = roomNumbers[i] + (5 - availability[i]);
-                    availability[i]--;
-
-                    System.out.println("\n✅ Booking Confirmed!");
-                    System.out.println("Guest Name: " + name);
-                    System.out.println("Room Type: " + roomTypes[i]);
-                    System.out.println("Room Number: " + allocatedRoom);
-
-                    return i;
-                } else {
-                    System.out.println("❌ Room not available");
-                    return -1;
-                }
+                return i;
             }
         }
-
-        System.out.println("⚠️ Invalid room type");
         return -1;
     }
 
-    // Add-on services
+    // Service selection with validation
     public static String selectServices(Scanner sc) {
 
         System.out.println("\nSelect Add-On Services (y/n):");
@@ -85,11 +97,19 @@ public class BookMyStayApp {
         String selected = "";
 
         for (int i = 0; i < services.length; i++) {
-            System.out.print(services[i] + "? (y/n): ");
-            String choice = sc.nextLine();
 
-            if (choice.equalsIgnoreCase("y")) {
-                selected += services[i] + " ";
+            while (true) {
+                System.out.print(services[i] + "? (y/n): ");
+                String choice = sc.nextLine();
+
+                if (choice.equalsIgnoreCase("y")) {
+                    selected += services[i] + " ";
+                    break;
+                } else if (choice.equalsIgnoreCase("n")) {
+                    break;
+                } else {
+                    System.out.println("⚠️ Please enter only y or n");
+                }
             }
         }
 
