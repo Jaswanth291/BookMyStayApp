@@ -16,10 +16,13 @@ public class BookMyStayApp {
 
         displayRooms();
 
-        System.out.print("\nEnter room type to search: ");
-        String search = sc.nextLine();
+        System.out.print("\nEnter room type to book: ");
+        String room = sc.nextLine();
 
-        searchRoom(search);
+        bookRoom(room);
+
+        System.out.println("\nUpdated Availability:");
+        displayRooms();
     }
 
     // Display rooms
@@ -32,16 +35,17 @@ public class BookMyStayApp {
         }
     }
 
-    // Search logic
-    public static void searchRoom(String search) {
+    // Booking logic (First-Come-First-Served)
+    public static void bookRoom(String room) {
         boolean found = false;
 
         for (int i = 0; i < roomTypes.length; i++) {
-            if (roomTypes[i].equalsIgnoreCase(search)) {
+            if (roomTypes[i].equalsIgnoreCase(room)) {
                 found = true;
 
                 if (availability[i] > 0) {
-                    System.out.println("✅ Room available! Count: " + availability[i]);
+                    availability[i]--; // decrease count
+                    System.out.println("✅ Booking Confirmed for " + roomTypes[i]);
                 } else {
                     System.out.println("❌ Room not available");
                 }
@@ -50,7 +54,7 @@ public class BookMyStayApp {
         }
 
         if (!found) {
-            System.out.println("⚠️ Room type not found");
+            System.out.println("⚠️ Invalid room type");
         }
     }
 }
