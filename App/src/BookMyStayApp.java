@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BookMyStayApp {
@@ -9,6 +10,9 @@ public class BookMyStayApp {
 
     // Add-on services
     static String[] services = {"Breakfast", "WiFi", "Parking"};
+
+    // Booking History
+    static ArrayList<String> bookingHistory = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -29,11 +33,11 @@ public class BookMyStayApp {
         int roomIndex = bookRoom(name, room);
 
         if (roomIndex != -1) {
-            selectServices(sc, name, roomIndex);
+            String selectedServices = selectServices(sc);
+            saveBooking(name, roomIndex, selectedServices);
         }
 
-        System.out.println("\nUpdated Availability:");
-        displayRooms();
+        showHistory();
     }
 
     // Display rooms
@@ -61,7 +65,7 @@ public class BookMyStayApp {
                     System.out.println("Room Type: " + roomTypes[i]);
                     System.out.println("Room Number: " + allocatedRoom);
 
-                    return i; // return index for services
+                    return i;
                 } else {
                     System.out.println("❌ Room not available");
                     return -1;
@@ -73,8 +77,8 @@ public class BookMyStayApp {
         return -1;
     }
 
-    // Add-on services selection
-    public static void selectServices(Scanner sc, String name, int roomIndex) {
+    // Add-on services
+    public static String selectServices(Scanner sc) {
 
         System.out.println("\nSelect Add-On Services (y/n):");
 
@@ -89,10 +93,31 @@ public class BookMyStayApp {
             }
         }
 
-        System.out.println("\n🧾 Final Reservation Details:");
-        System.out.println("Guest Name: " + name);
-        System.out.println("Room Type: " + roomTypes[roomIndex]);
-        System.out.println("Add-On Services: " +
-                (selected.isEmpty() ? "None" : selected));
+        return selected.isEmpty() ? "None" : selected;
+    }
+
+    // Save booking
+    public static void saveBooking(String name, int roomIndex, String services) {
+
+        String record = "Name: " + name +
+                " | Room: " + roomTypes[roomIndex] +
+                " | Services: " + services;
+
+        bookingHistory.add(record);
+    }
+
+    // Show history
+    public static void showHistory() {
+
+        System.out.println("\n📊 Booking History:");
+
+        if (bookingHistory.isEmpty()) {
+            System.out.println("No bookings yet.");
+            return;
+        }
+
+        for (int i = 0; i < bookingHistory.size(); i++) {
+            System.out.println((i + 1) + ". " + bookingHistory.get(i));
+        }
     }
 }
